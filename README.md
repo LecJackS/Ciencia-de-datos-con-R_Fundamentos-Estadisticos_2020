@@ -8,6 +8,7 @@
 
 ## Seminario Elemental de Estadística con R 2020
 
+### Mariela Sued - Jemina García - Ana M. Bianco
+
 ---
 
-### Mariela Sued - Jemina García - Ana M. Bianco
