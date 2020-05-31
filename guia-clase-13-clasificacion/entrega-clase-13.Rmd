@@ -1,0 +1,74 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.4.2
+  kernelspec:
+    display_name: R [conda env:r] *
+    language: R
+    name: conda-env-r-r
+---
+
+# Ciencia de datos con R: Fundamentos Estadísticos
+## Seminario Elemental de Estadística con R 2020
+
+---
+
+**Alumno: Leandro Carreira**
+
+**LU: 669/18**
+
+---
+
+
+
+## Clasificador Vecinos Cercanos
+
+```{r}
+ClasificoVecinos <- function(X, Y, xNuevo, k=10){
+    # Ordeno las etiquetas Y en función de 
+    # la distancia de xNuevo a cada valor de X
+    Y.ordenados <- Y[ order(abs(X - xNuevo)) ]
+    k.cercanos  <- Y.ordenados[1:k]
+    # Clasifica en favor de la clase 1 en empate con k par
+    pred <- as.numeric(mean(k.cercanos)>=0.5)
+    return(pred)
+}
+```
+
+## Clasificador Promedio Móvil
+
+```{r}
+ClasificoMovil <- function(X, Y, xNuevo, h=1){
+    # Devuelve NA si no hay datos dentro de la ventana
+    # Filtro etiquetas de valores de X en ventana +/- h
+    Y.en.ventana <- Y[ X > xNuevo-h & X < xNuevo+h ]
+    # Clasifica en favor de la clase 1 en caso de empate
+    pred <- as.numeric(mean(Y.en.ventana)>=0.5)
+    return(pred)
+}
+```
+
+## Clasificador Generativo
+
+Estimo la función de densidad condicional $f_{X|Y=1}(x)$ y $f_{X|Y=0}(x)$ , llamadas $f_1(x)$ y $f_0(x)$, usando la función `density` de R como se pide en el punto 6.
+
+Para evaluar estas funciones y obtener el *likelihood*, especifico un solo valor a estimar, desde y hasta un mismo valor `xNuevo`.
+
+```{r}
+ClasificoGenerativo <- function(X, Y, xNuevo){
+    # Estimo probabilidades condicionadas con kernel gaussiano
+    f_1.x <- density(X[Y==1], k='gaussian', from=xNuevo, to=xNuevo, n=1)$y
+    f_0.x <- density(X[Y==0], k='gaussian', from=xNuevo, to=xNuevo, n=1)$y
+    # Estimo probilidades a priori de las clases
+    P_1 <- mean(Y)
+    P_0 <- 1 - P_1
+    # Uso regla de Bayes óptima para clasificación
+    pred <- as.numeric(f_1.x*P_1 >= f_0.x*P_0)
+    return(pred)
+}
+```
