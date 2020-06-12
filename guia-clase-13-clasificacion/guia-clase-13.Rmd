@@ -33,6 +33,11 @@ hist(data[data$genero=='M','altura'], xlim=c(min(data$altura),max(data$altura)),
 hist(data[data$genero=='F','altura'], add=T, col=rgb(0,1,0,0.5))
 ```
 
+```{r}
+boxplot(data[data$genero=='M','altura'])
+boxplot(data[data$genero=='F','altura'])
+```
+
 ## 2.
 
 ```{r}
