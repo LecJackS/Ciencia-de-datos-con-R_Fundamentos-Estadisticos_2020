@@ -1,0 +1,212 @@
+---
+title: "Estadística (Q) -  Clase 11  -  Simulaciones  "
+date: "`r Sys.Date()`"
+output:   html_document
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(999)
+```
+
+
+# Repaso de Estadística: 
+
+* Para nosotros **población**		es la **distribución** que genera los datos. 
+				
+* Muestra: $X_1, \ldots, X_n$ iid,  $X_i\sim F$, $F$ es la **población**. 
+				
+*	Cualquier cantidad $\theta=\theta(F)$ relacionada a $F$ se dice parámetro poblacional. 
+				
+		
+		
+		
+* Cuándo hacemos estadística no conocemos a $F$ ni el valor del parámetro poblacional $\theta$ de interés. 
+		
+* Cuándo hacemos estadística queremos hacer una cuenta con la muestra que nos permita *estimar* el valor  $\theta$ de interés. 
+		
+		
+\begin{equation}\hbox{Estimador:}\quad \widehat \theta_n=
+		\widehat \theta_n(X_1\, \ldots, X_n)
+		\end{equation}
+		
+\begin{equation}
+		\hbox{Estimación:}\quad \widehat \theta_{n,\hbox{obs}}=
+		\widehat \theta_n(x_1\, \ldots, x_n), 
+		\end{equation}
+		donde $x_1, \ldots, x_n$ representan  datos. Valores observados. 
+		
+
+### Algunas definiciones importantes: 
+
+*	**Consistencia:** 		$(\widehat \theta_n)_{n\geq 1}$ se dice consistente si 
+		$\widehat \theta_n \to \theta$ en probabilidad. Esta propidad, por lo general, la podemos deducir combinando la ley de los grandes números con alguna funcion continua, como se muestra en la clase teórica (ver slide 8 Clase 11).  
+		
+		
+* **Sesgo:** El sesgo de un estimador se define siendo $\mathbb E(\widehat \theta_n)-\theta$. 
+		Cuando un estimador es *promedio de algo*, resulta fácil calcular su esperanza. Si no...
+
+
+
+# Sobre la consistencia de los quantiles muestrales (o empíricos)
+
+Gracias a la Ley de los Grandes Números  y otras yerbas (ver slide 8 de la Clase 11 ), hemos estudiado propiedades de los estimadores propuestos para $\mu$, para una probabilidad $p$ y para $\sigma^2$. 
+No tenemos propiedades que garanticen la consistencia de los quantiles muestrales a los poblacionales. En esta Guía vamos a estudiar mediante una simulación el comportamiento de los cuantiles muestrales, a medida que $n$ aumenta.  Esperamos  ver que convergen a donde queremos!
+
+
+## Antes de empezar, hablemos de semillas
+
+En esta parte de la materia estamos haciendo muchas simulaciones. Le pedimos a la compu que nos de valores que emule valores con cierta distribución. Por ejemplo, si queremos 10 valores de una normal estandar, hacemos 
+
+
+```{r}
+rnorm(n=5,mean = 0,sd=1)
+```
+
+Ejecutar este mismo comando y comparar con los valores obtenidos. ¿Son los mismos?
+Notemos que cada vez que ejecutamos ese comando, obtenemos diferentes valores. 
+Si queremos guardarlos, los asignamos a una variable y ahi los tenemos. 
+
+```{r}
+datos <- rnorm(n=5,mean = 0,sd=1)
+```
+
+En datos estan los 5 valores generados. 
+
+Ahora bien, ¿qué pasa si apago la compu y mañana quiero correr este script en el  labo de la Facultad?
+
+
+¿Cómo podemos hacer para que diferentes miembros del grupo trabajemos con los mismos valores?
+
+
+¿Cómo conseguir reproducibilidad en medio de la aleatoriedad?
+
+
+Para resolver esto, *fijamos una semilla*. Antes de seguir hablando, pongamos manos a la obra. 
+
+Los invito a que cada uno de ustedes ejecute los siguientes comandos.
+
+```{r}
+set.seed(000)
+rnorm(n=5,mean = 0,sd=1)
+```
+
+Comparar estos valores con los obtenidos por ustedes. ¿Son los mismos?
+
+Para esto sirve el comando set.seed(): para garantizar la reproducibilidad de cualquier aleatoriedad apartir del mismo valor de semilla. 
+
+Podes usar la semilla que quieras set.seed(000), set.seed(24292), la que te guste. Cada vez que ingresas tu libreta en el Shiny, estamos usando ese valor como semilla, para podr darte siempre los mismos datos. 
+
+Si te parece esto un poco confuso, dale para adelante, y volvemos en otro momento.
+O Googlea al respecto!!!!!
+
+
+
+# Estimación de Quantiles (o cuantiles....): algunas simulaciones
+
+## Simulamos con algunas distribuciones Famosas 
+
+### La uniforme. 
+
+Sean $X_i\sim \mathcal U(a, b)$ siendo $a=67$, $b=73$. Utilizaremos $X$ para denotar de manera genérica una variable con esta misma distribución.  
+
+Vamos a avisarle a R cuáles son los parámetros de la uniforme con la que vamos a generar datos
+```{r}
+a <- 67
+b <- 73
+```
+
+
+**Quantiles pobacionales vs.  muestrales (o empíricos)**
+
+
+1. ¿Cuánto vale $q_{0.9}=F^{-1}(0.9)$?
+Por favor, resuelvan analíticamente este problema y verifiquen que coincide con 
+
+```{r}
+quantile_poblacional_unif <- qunif(p=0.9,min = a,max = b)
+quantile_poblacional_unif
+```
+
+	
+2.  Guardar en el  vector `muchas_uniformes`, $Nrep=1000$ datos con distribución $\mathcal U(a, b)$ siendo $a=67$, $b=73$, utilizando el comando 
+	`runif()`.
+	
+```{r}
+Nrep=1000
+set.seed(000) #para que a mi me de siempre lo mismo. 
+muchas_uniformes <- runif(n=Nrep,min = a, max = b)
+```
+	
+	
+3. Guardar en el  vector `muchos_quantiles_uniformes` los  quantiles muestrales  correspondiente a las primeras $n$ observaciones del vector `muchas_uniformes`, con $n=1, \ldots, Nrep$.
+	Explorar el comando ` quantile(x= ,probs= )`.
+
+```{r}
+muchos_quantiles_uniformes<- rep(NA, Nrep)
+for(n in 1:Nrep)
+{
+  muchos_quantiles_uniformes[n] <- quantile(x=muchas_uniformes[1:n], probs = 0.9)
+}
+```
+
+
+
+
+4. Graficar $n$ (en el eje x) versus el quantile empírico  de los primeros $n$ datos Utilizar `ylim=c(65,75)`.
+	
+```{r}
+plot(1:Nrep, muchos_quantiles_uniformes,
+     ylim=c(65,75),cex=0.1, xlab = "repeticiones", ylab="quantiles muestrales", main="Simulación Quantiles - Dist Uniforme")
+```
+	
+	
+	
+	
+5.  Repetir los ítems 2-4 $Ngen=10$ veces, agregando al gráfico anterior los quantiles  de cada individuo en un color diferente. 
+
+
+
+
+```{r}
+ #para que a mi me de siempre lo mismo. 
+#Hago el primero separado, para dar inicio al plot. 
+set.seed(000)
+muchas_uniformes <- runif(n=Nrep,min = a, max = b)
+
+muchos_quantiles_uniformes<- rep(NA, Nrep)
+for(n in 1:Nrep)
+{
+muchos_quantiles_uniformes[n] <- quantile(x=muchas_uniformes[1:n], probs = 0.9)
+}
+plot(1:Nrep, muchos_quantiles_uniformes,ylim=c(65,75), cex=0.1, xlab = "repeticiones", ylab="quantiles muestrales", main="Simulación Quantiles - Dist Uniforme")
+
+
+
+
+#los proximos los hago con un for,  y los puntos se agregan al plot inicial con el comando  point
+
+
+Ngen <- 10
+for( j in 1:Ngen)
+{
+muchas_uniformes <- runif(n=Nrep,min = a, max = b)
+
+  muchos_quantiles_uniformes<- rep(NA, Nrep)
+for(n in 1:Nrep)
+{
+  muchos_quantiles_uniformes[n] <- quantile(x=muchas_uniformes[1:n], probs = 0.9)
+}
+points(1:Nrep, muchos_quantiles_uniformes, cex=0.1,col=j)
+}
+
+
+```
+	
+6.  Indicar  cuál espera que sea el valor límite de estas sucesiones. ¿Se condice con lo que muestra el gráfico? 
+	
+	
+

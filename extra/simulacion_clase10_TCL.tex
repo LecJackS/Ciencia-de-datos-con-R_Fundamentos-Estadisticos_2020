@@ -1,0 +1,564 @@
+\documentclass[12pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath,amsthm, amsfonts, amscd , amssymb}
+
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage[dvipsnames, usenames]{color}
+\usepackage{framed}
+
+\usepackage{latexsym}
+
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{lemma}{Lema}[section]
+% \theoremstyle{definition}
+\newtheorem{notation}{Notaci?n}[section]
+\newtheorem{example}{Ejemplo}[section]
+\newtheorem{proposition}{Proposici?n}[section]
+\newtheorem{ejemplo}[theorem]{Ejemplo}
+\newtheorem{corollary}{Corolario}[section]
+\newtheorem{remark}{Observaci\'on}[section]
+\newtheorem{ejercicio}{Ejercicio}[section]
+\newtheorem{algorithm}{Algoritmo}[section]
+\newtheorem{corolario}{Corolario}[section]
+
+\newtheorem{definition}{Definici\'on}
+\setlength{\textwidth}{6.5in} \setlength{\oddsidemargin}{0in}
+\topmargin 0pt \textheight 7.75in
+\newcommand{\convprob}{ \buildrel{p}\over\longrightarrow}
+
+
+\def \EE {\mathbb{E}}
+\def \PP {\mathbb{P}}
+
+\begin{document}
+
+\centerline{\bf ESTAD\'ISTICA (Q)}%
+
+\medskip
+
+
+{\sc Simulaci\'on - Teorema Central del L?mite  - Clase 10}
+
+\bigskip 
+
+
+Antes de empezar, los invitamos a visitar el sitio \href{https://www.nature.com/collections/qghhqm/pointsofsignificance}{Point of Significance}, una publicaci\'on de Nature dedicada a la divulgaci?n de la estad?stica dentro de las ciencias naturales. 
+En particular, los invitamos a que miren el trabajo  \href{https://www.nature.com/articles/nmeth.2613
+} {Importance of being uncertain}, considerando que vamos a querer replicar parte de los resultados presentados en la Figura 3. 
+
+
+A lo largo de esta Gu?a estudiaremos emp?ricamente la distribuci\'{o}n del promedio de
+variables aleatorias independientes e id\'{e}nticamente distribuidas. A trav\'{e}s de
+los histogramas correspondientes, analizaremos el comportamiento de la distribuci?n del promedio a medida que aumentamos $n$, la cantidad de variables a promediar. 
+
+Para ello generaremos un conjunto de $n$  datos  con una
+distribuci\'{o}n dada y luego calcularemos su promedio. 
+Replicaremos \'{e}sto mil veces, es decir, generaremos $Nrep=1000$  realizaciones de la variable aleatoria  $\overline{X}_n$,  para diferentes valores de $n$.  Observemos que, en principio,
+desconocemos la distribuci\'{o}n de $\overline{X}_n$. Utilizando  las $Nrep=1000$ realizaciones del promedio 
+realizaremos un histograma de los promedios generados para
+obtener una aproximaci\'{o}n de la densidad o la funci\'{o}n de probabilidad
+de $\overline{X}_n$.
+
+\section{Teorema Central del L?mite: El Teorema}
+Antes de empezar con nuestras simulaciones, recordemos 
+el  Teorema  Central del L?mite. Sea $(W_i)_{i\geq 1}$ una sucesi\'on de v.a.i.i.d.
+con $\mathbb E(W_i)=\mu$ y $\mathbb{V}(X_i)=\sigma^2$. 
+
+Una de las maneras de ver el TCL en t?rminos del promedio es la siguiente: 
+\begin{equation}
+\overline W_n\;{\color{red}\buildrel{a}\over\approx}\;
+\mathcal N(\mu,\sqrt{\sigma^2/n})\;.
+\end{equation}
+
+
+
+
+Si estandarizamos al promedio, obtenemos esta otra posible presentaci?n:  
+\begin{equation}
+\label{TCL-promedios}
+\frac{\overline W_n-\mu}{\sqrt{\sigma^2/n}}\;{\color{red}\buildrel{a}\over\approx}\;
+\mathcal N(0,1)\;.
+\end{equation}
+%donde $(W_i)_{i\geq 1}$ son variables aleatorias i.i.d. 
+
+\section{Teorema Central del L?mite: Simulaciones}
+
+
+\subsection{Distribuci?n Bernoulli}
+Sean $X_i\sim \mathcal Be(p)$ siendo $p=0,2$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+\begin{enumerate}	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	\textquestiondown Cu?nto vale $\mathbb{V}(X)$?
+	\item Guardar en el vector ber$\_$N$\_$infty= 10000 datos correspondientes a 10.000 realizaciones $\mathcal Be(p)$ con $p=0,2$ y calcular la frecuencia relativa de cada posible valor. 
+	Explorar el comando \texttt{table()}. 
+	
+	
+	\vspace{0.2cm}	
+	\textbf{La distribuci?n emp?rica del promedio}
+	
+	\item Guardar en el  vector \texttt{promedios$\_$bernoullies}, $Nrep=1000$ promedios utilizando $n=5$ datos con distribuci?n $\mathcal Be(p)$ siendo $p=0,2$. Recordar  el comando \texttt{rbinom()}, teniendo  precauci?n con los par?metros que utiliza esta funci?n (ver \texttt{help(rbinom)}).
+	\item Realizar un histograma con los promedios guardados en \texttt{promedios$\_$bernoullies}.
+	\item Repetir los ?tems 2 y 3 con $n=30$ y con $n=100$. Comparar los tres histogramas obtenidos, notar la diferencia en las escalas.
+	%{\color{red} Preguntar para que vean  como los histogramas quedan cada vez mas concentrados alrededor de $\mu$. PRestar atencion a la escala de los diferentes histogramas.  }
+	
+	\vspace{0.2cm}
+	\textbf{La distribuci?n emp?rica  del Promedio \textit{estandarizado}}
+	
+	\item  Realizar ahora histogramas de \texttt{promedios$\_$bernoullies$\_$est} donde a los valores guardados en \texttt{promedios$\_$bernoullies} se les resta $\mu$ y se los divide por $\sqrt{\sigma^2/n}$. Utilizar $n \in \{5,30,100\}$, \textquestiondown Qu? se observa?
+	
+	
+	\item Repetir todos los ?tems anteriores con $p=0.5$. 
+	
+\end{enumerate}
+
+
+
+\subsection{Distribuci?n Uniforme}
+
+Sean $X_i\sim \mathcal U(a, b)$ siendo $a=67$, $b=73$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+\vspace{0.3cm}
+\begin{enumerate}	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	\textquestiondown Cu?nto vale $\mathbb{V}(X)$?
+	\item Guardar en el vector unif$\_$N$\_$infty= 10000 datos correspondientes a 10.000 realizaciones $\mathcal U(a, b)$ siendo $a=67$, $b=73$ y  realizar un histograma. 
+	
+	
+	\vspace{0.2cm}	
+	\textbf{La distribuci?n emp?rica del promedio}
+	
+	\item Guardar en el  vector \texttt{promedios$\_$uniformes}, $Nrep=1000$ promedios utilizando $n=5$ datos con distribuci?n $\mathcal U(a, b)$ siendo $a=67$, $b=73$. Recordar  el comando \texttt{runif()}.
+	
+	
+	\item Realizar un histograma con los promedios guardados en \texttt{promedios$\_$uniformes}.
+	\item Repetir los ?tems 2 y 3 con $n=30$ y con $n=100$. Comparar los tres histogramas obtenidos, notar la diferencia en las escalas.
+	%{\color{red} Preguntar para que vean  como los histogramas quedan cada vez mas concentrados alrededor de $\mu$. PRestar atencion a la escala de los diferentes histogramas.  }
+	
+	\vspace{0.2cm}
+	\textbf{La distribuci?n emp?rica  del Promedio \textit{estandarizado}}
+	
+	
+		\item  Realizar ahora histogramas de \texttt{promedios$\_$uniformes$\_$est} donde a los valores guardados en \texttt{promedios$\_$uniformes} se les resta $\mu$ y se los divide por $\sqrt{\sigma^2/n}$. Utilizar  $n \in \{5,30,100\}$, \textquestiondown Qu? se observa?
+	
+	
+\end{enumerate}
+
+
+
+
+
+\subsection{Distribuci?n Exponencial}
+Sean $X_i\sim \mathcal E(\lambda)$ siendo $\lambda=1/10$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+\begin{enumerate}	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	\textquestiondown Cu?nto vale $\mathbb{V}(X)$?
+	
+		\item Guardar en el vector exp$\_$N$\_$infty= 10000 datos con distribuci?n $\mathcal E(\lambda)$ siendo $\lambda=0,1$ y realizar un histograma de ellos. 
+
+	
+	\vspace{0.2cm}	
+	\textbf{La distribuci?n emp?rica del promedio}
+	
+	\item Guardar en el  vector \texttt{promedios$\_$exponenciales}, $Nrep=1000$ promedios utilizando $n=5$ datos con distribuci?n $\mathcal E(\lambda)$ siendo $\lambda=0,1$. Recordar el comando \texttt{rexp()}.
+	\item Realizar un histograma con los promedios guardados en \texttt{promedios$\_$exponenciales}.
+	\item Repetir los ?tems 2 y 3 con $n=30$ y con $n=100$. Comparar los tres histogramas obtenidos, notar la diferencia en las escalas.
+	%{\color{red} Preguntar para que vean  como los histogramas quedan cada vez mas concentrados alrededor de $\mu$. PRestar atencion a la escala de los diferentes histogramas.  }
+	
+	\vspace{0.2cm}
+	\textbf{La distribuci?n emp?rica  del Promedio \textit{estandarizado}}
+	
+	
+	\item  Realizar ahora histogramas de \texttt{promedios$\_$exponenciales$\_$est} donde a los valores guardados en \texttt{promedios$\_$exponenciales} se les resta $\mu$ y se los divide por $\sqrt{\sigma^2/n}$. Utilizar  $n \in \{5,30,100\}$, \textquestiondown Qu? se observa?
+	
+	
+	
+	\item  Realizar ahora histogramas de \texttt{promedios$\_$exponenciales} con $n \in \{5,30,100\}$ donde a los valores guardados en \texttt{promedios$\_$exponenciales} se les resta $\mu$ y se los divide por $\sqrt{\sigma^2/n}$. \textquestiondown Qu? se observa?
+	
+\end{enumerate}
+
+
+\section{Simulaciones de promedios de variables aleatorias Normales}
+
+Sean $X_i\sim \mathcal N(\mu, \sigma^2)$ siendo $\mu=70$ y $\sigma^2=1.2$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+
+\begin{enumerate}	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	\textquestiondown Cu?nto vale $\mathbb{V}(X)$?
+	
+	\item Guardar en el vector norm$\_$N$\_$infty= 10000 datos con distribuci?n $\mathcal N(\mu, \sigma^2)$ siendo $\mu=70$ y $\sigma^2=1.2$ y realizar un histograma de ellos. 
+	
+	
+	\vspace{0.2cm}	
+	\textbf{La distribuci?n emp?rica del promedio}
+	
+	\item Guardar en el  vector \texttt{promedios$\_$normales}, $Nrep=1000$ promedios utilizando $n=5$ datos con distribuci?n $\mathcal N(\mu, \sigma^2)$ siendo $\mu=70$ y $\sigma^2=1.2$. Recordar el comando \texttt{rnorm()}.
+	\item Realizar un histograma con los promedios guardados en \texttt{promedios$\_$normales}.
+	\item Repetir los ?tems 2 y 3 con $n=30$ y con $n=100$. Comparar los tres histogramas obtenidos, notar la diferencia en las escalas.
+	%{\color{red} Preguntar para que vean  como los histogramas quedan cada vez mas concentrados alrededor de $\mu$. PRestar atencion a la escala de los diferentes histogramas.  }
+	
+	\vspace{0.2cm}
+	\textbf{La distribuci?n emp?rica  del Promedio \textit{estandarizado}}
+	
+	
+	\item  Realizar ahora histogramas de \texttt{promedios$\_$normales$\_$est} donde a los valores guardados en \texttt{promedios$\_$normales} se les resta $\mu$ y se los divide por $\sqrt{\sigma^2/n}$. Utilizar  $n \in \{5,30,100\}$, \textquestiondown Qu? se observa?
+	
+	
+	
+\end{enumerate}
+
+
+
+
+\end{document}
+
+
+\begin{enumerate}
+	\item Comencemos por tomar un primer conjunto de datos de variables aleatorias
+	$X_{1},\ldots,X_{1000}$ independientes con distribuci\'{o}n $U(0,1)$. Le
+	pedimos a R que nos genere una muestra de ellas y luego hacemos un
+	histograma. \textquestiondown A qu\'{e} densidad se parece el histograma obtenido?
+	
+	\item Considere dos variables aleatorias $X_{1}$ y $X_{2}$ independientes con
+	distribuci\'{o}n $U(0,1)$ y el promedio de ambas, es decir,
+	\[
+	\overline{X}=\frac{X_{1}+X_{2}}{2}\,.
+	\]
+	Generando una muestra de dos variables aleatorias con distribuci\'{o}n
+	$U(0,1)$, compute la variable promedio. Replique 1000 veces y a partir de los
+	valores replicados realice un histograma. \textquestiondown Qu\'{e}
+	caracter\'{\i}sticas tiene este histograma?
+	
+	\item Aumentemos a cinco las variables promediadas. Considere ahora 5
+	variables aleatorias uniformes independientes,es decir $X_{1},X_{2}%
+	,\dots,X_{5}$ i.i.d. con $X_{i}\sim U(0,1)$ y defina
+	\[
+	\overline{X}=\frac{1}{5}\sum_{i=1}^{5}X_{i}\,.
+	\]
+	
+	
+	Generando muestras de cinco variables aleatorias con distribuci\'{o}n $U(0,1)$
+	compute la variable promedio. Repita 1000 veces y realice un histograma
+	para los valores obtenidos. Compare con el histograma anterior.
+	\textquestiondown Qu\'{e} observa?
+	
+	\item Aumentemos a\'{u}n m\'{a}s la cantidad de variables promediadas.
+	Generando muestras de 30 variables aleatorias con distribuci\'{o}n $U(0,1)$
+	repita el \'{\i}tem anterior. \textquestiondown Qu\'{e} observa?
+	
+	\item \'{I}dem anterior generando muestras de 500 variables aleatorias.
+	\textquestiondown Qu\'{e} pasa si se aumenta el tama\~{n}o de la muestra?
+	Observe que para poder comparar los histogramas de los distintos conjuntos de
+	datos ser\'{a} necesario tenerlos dibujados en la misma escala tanto para el
+	eje horizontal como para el vertical. 
+	%Por eso, en general es m\'{a}s c\'{o}modo hacer boxplots para comparar distintos conjuntos de datos.
+	
+	\item Finalmente h\'agalo tambi\'{e}n para 1200.
+	%y haga un boxplot de los 6 conjuntos de datos en el mismo gr\'{a}fico. En este gr\'{a}fico se ver\'{a} que a medida que aumenta el $n$ los valores de los promedios tienden a concentrarse, \textquestiondown alrededor de qu\'{e} valor? 
+	Calcule media y varianza muestral para cada conjunto de datos. \textquestiondown Puede dar los
+	valores te\'{o}ricos a los que deber\'{\i}an parecerse? 
+	%Realice un qqplot para cada uno de los 6 conjuntos de datos. \textquestiondown Son esperables los resultados?
+	
+	\item El teorema central del l\'{\i}mite nos dice que cuando hacemos la
+	siguiente transformaci\'{o}n con los promedios, $$\frac{\overline{X}%
+		_{n}-E\left(  X_{1}\right)  }{\sqrt{\frac{Var\left(  X_{1}\right)  }{n}}}\,,$$ la
+	distribuci\'{o}n de estas variables aleatorias se aproxima a la de una normal
+	est\'{a}ndar, cuando $n$ es suficientemente grande. Para comprobarlo
+	emp\'{\i}ricamente, hagamos esta transformaci\'{o}n en los 6 conjuntos de
+	datos (es razonable hacerlo para valores de $n$ suficientemente grandes, lo
+	realizaremos en todos los casos para comparar) y luego comparemos los datos
+	transformados mediante histogramas.
+	%y boxplots.
+	
+	\item{\color{red} \textquestiondown \'Esto va?} Repetir los \'{\i}tems anteriores generando ahora variables con
+	distribuci\'{o}n $\mathcal{C}(0,1).$ Comparar los resultados obtenidos.
+	Recordar que la densidad de una Cauchy es%
+	\[
+	f_{X}\left(  x\right)  =\frac{1}{\pi\left(  1+x^{2}\right)  },
+	\]
+	que es una densidad sim\'{e}trica alrededor del cero, con colas que acumulan
+	m\'{a}s probabilidad que la normal est\'{a}ndar, y que no tiene esperanza ni
+	varianza finitas.
+\end{enumerate}
+
+
+\end{document}
+
+
+
+
+\section{Ley de los Grandes N?meros: El Teorema}
+Antes de empezar con nuestras simulaciones, recordemos 
+que dice la lay de los grande n?mero establece que 
+\begin{equation}
+\label{LGN-promedios}
+\overline W_n=\frac{1}{n}\sum_{i=1}^nW_i \longrightarrow \mathbb E(W)\quad\hbox{en probabilidad}\;,
+\end{equation}
+donde $(W_i)_{i\geq 1}$ son variables aleatorias i.i.d. 
+En particular, si las variables tienen distribuci?n Bernoulli, obtenemos que la frecuencia relativa de ?xitos converge a su probabilidad. M?s generalmente, si $(X_i)_{i\geq 1}$ son variables i.i.d. y $A$ es un conjunto de n?mero reales, podemos definir
+$$Y_i=I_{X_i\in A}=I_A(X_i)$$
+Es decir, $Y_i$ vale 1 si $X_i$ pertenece al conjunto $A$ y cero caso contrario. En tal caso, las variables $Y_i$ tienen distribuci?n Bernoulli, con $\mathbb P(Y_i=1)=\mathbb P(X_i\in A)$, 
+y por consiguiente, $\mathbb E(Y)=\mathbb P(X\in A)$. 
+Invocando la LEy de los Grandes N?meros,  utilizando $Y_i$ en lugar de $W_i$, tenemos que 
+$$
+\overline Y_n=\frac{1}{n}\sum_{i=1}^nY_i \longrightarrow \mathbb E(Y)\quad\hbox{en probabilidad}
+$$
+Es decir, 
+\begin{equation}
+\label{LGN-frec-rel}
+\frac{1}{n}\sum_{i=1}^nI_A(X_i) \longrightarrow \mathbb P(X\in A)\quad\hbox{en probabilidad}
+\end{equation}
+
+Es decir, la frecuencia relativa converge a la probabilidad. 
+
+
+\section{Ley de los Grandes N?meros: Simulaciones}
+
+
+Ahora vamos a estudiar emp?ricamente  la ley de los grandes n?meros. 
+
+Para ello, vamos  considerar $X_i\sim F$, generar $Nrep$ datos con la distribuci?n $F$.  Comparar promedios con esperanzas, como postula la ecuacion  (\ref{LGN-promedios}) y  frecuencias relativas com probabilidades, como se postula en las ecuaciones  (\ref{LGN-fre-rel}).
+
+
+
+\subsection{Distribuci?n Uniforme}
+
+Sean $X_i\sim \mathcal U(a, b)$ siendo $a=67$, $b=73$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+\textbf{Promedios y Esperanzas}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$ uniformes} $Nrep=1000$ datos con distribuci?n $\mathcal U(a, b)$ siendo $a=-1$, $b=1$, utilizando el comando 
+	\texttt{runif()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$promedios$\_$ uniformes} el promedio de las primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus el promedio de los primeros $n$ datos. Utilizar $ylim=c(65,75)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior los promedios de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	\textbf{Frecuencias Relativas y Probabilidades}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb P(68\leq X\leq 72)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$ uniformes} $Nrep=1000$ datos con distribuci?n $\mathcal U(a, b)$ siendo $a=67$, $b=73$, utilizando el comando 
+	\texttt{runif()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$frec$\_$rel$\_$ uniformes} la frecuencia relativa con la cual el dato aparece en el intervalo pedido $(68,72)$ a lo largo de las  primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus la frecuencia relativa  de los primeros $n$ datos. Utilizar $ylim=c(0,1)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior las frecuencias relativas  de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	
+	
+\end{enumerate}
+
+\newpage
+
+
+
+\subsection{Distribuci?n Normal }
+
+Sean $X_i\sim \mathcal N(\mu, \sigma^2)$ siendo $\mu=70$, $\sigma^2=1.2$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+\textbf{Promedios y Esperanzas}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	
+	\item Guardar en el  vector \texttt{muchas  ormales} $Nrep=1000$ datos con distribuci?n $\mathcal N(\mu, \sigma^2)$ siendo $\mu=70$, $\sigma^2=1.2$, utilizando el comando 
+	\texttt{rnorm()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$promedios$\_$ normales} el promedio de las primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus el promedio de los primeros $n$ datos. Utilizar $ylim=c(60,80)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior los promedios de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	\textbf{Frecuencias Relativas y Probabilidades}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb P(68\leq X\leq 72)$?
+	
+	\item Guardar en el  vector \texttt{muchas  ormales} $Nrep=1000$ datos  con distribuci?n $\mathcal N(\mu, \sigma^2)$ siendo $\mu=70$, $\sigma^2=1.2$, utilizando el comando 
+	\texttt{rnorm()}.
+	
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$frec$\_$rel  ormales} la frecuencia relativa con la cual el dato aparece en el intervalo pedido $(68,72)$ a lo largo de las  primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus la frecuencia relativa  de los primeros $n$ datos. Utilizar $ylim=c(0,1)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior las frecuencias relativas  de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	
+	
+\end{enumerate}
+
+
+
+
+
+\subsection{Distribuci?n Normal }
+
+Sean $X_i\sim \mathcal E(\lambda)$ siendo $\lambda=0.4$. Utilizaremos $X$ para denotar de manera gen?rica una variable con esta misma distribuci?n.  
+
+
+\textbf{Promedios y Esperanzas}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb E(X)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$exponenciales} $Nrep=1000$ datos con distribuci?n $ \mathcal E(\lambda)$ siendo $\lambda=0.4$., utilizando el comando 
+	\texttt{rexp()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$promedios$\_$ exponenciales} el promedio de las primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus el promedio de los primeros $n$ datos. Utilizar $ylim=c(0,10)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior los promedios de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	\textbf{Frecuencias Relativas y Probabilidades}
+	
+	\item \textquestiondown Cu?nto vale $\mathbb P( X> 7)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$exponenciales} $Nrep=1000$ datos con distribuci?n $ \mathcal E(\lambda)$ siendo $\lambda=0.4$., utilizando el comando 
+	\texttt{rexp()}.
+	
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$frec$\_$rel$\_$exponenciales} la frecuencia relativa con la cual el dato aparece en el intervalo pedido $(7, \infty)$ a lo largo de las  primeras $n$ overvaciones, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus la frecuencia relativa  de los primeros $n$ datos. Utilizar $ylim=c(0,1)$.
+	
+	\item Repetir los items 2-4  $Ngen=10$ veces, agregando al gr?fico anterior anterior las frecuencias relativas  de cada individuo  en un color diferente por cada uno de ellos. 
+	
+	\item Indicar, seg?n la LGN,  cu?l es el valor l?mite de estas sucesiones. Se condice con lo que muestra el gr?fico? 
+	
+	
+	
+\end{enumerate}
+
+
+\newpage
+
+\item\label{conjunta} En una cierta poblaci\'{o}n, se elige
+un trabajador mayor de 30 a\~{n}os. Sean
+
+$X=$ cantidad de a\~{n}os de educaci\'{o}n que recibi\'{o},
+
+$Y=$ salario que cobra (en miles de pesos).
+
+Se sabe que la funci\'{o}n de probabilidad puntual del vector aleatorio
+$\left(  X,Y\right)  $ est\'{a} dado por $p_{XY}\left(  x,y\right)  $%
+\[%
+\begin{tabular}
+[c]{c|cccc}%
+$Y/X$ & 7 & 12 & 18 & 24\\\hline
+4 & 0.14 & 0.23 & 0.02 & 0.01\\
+10 & 0.06 & 0.16 & 0.25 & 0.03\\
+15 & 0 & 0.01 & 0.03 & 0.06
+\end{tabular}
+\
+\]
+(es decir que, por ejemplo, $0.23=p_{XY}\left(  12,4\right)  ).$
+
+\begin{enumerate}
+	\item Hallar las funciones de probabilidad puntual $p_{X}$ y $p_{Y}$.
+	
+	\item Calcular $\mathbb{E}\left(X\right)$ y $\mathbb{E}\left(Y\right).$
+	
+	
+	\item \textquestiondown Son las variables $X$ e $Y$ independientes?
+	
+	
+		%(Interpretaci\'{o}n de covarianza) 
+	
+	\end{enumerate}
+
+
+\item \label{bacterias} El n\'umero de colonias de bacterias de Tipo I que aparecen despu\'es de dos d\'ias de cultivo 
+es una variable aleatoria Poisson  de par\'ametro $\lambda_1$, mientras que para las bacterias de Tipo II 
+el par\'ametro es $\lambda_2$. 
+En un laboratorio  se cultivan  simult?neamente bacterias  Tipo I y Tipo II, que  crecen de manera independiente.
+Calcular la probabilidad de que al cabo de dos d\'ias aparezca 
+una colonia. Utilice los par\'ametros $\lambda_1$ y $\lambda_2$ que figuran en la planilla {\color{red} ,,,,,}
+
+
+\item {\color{red}Personalizar los datos para este ejercicio: 	La vida de una bater?a  se distribuye normalmente
+con media de $\mu$  d?as y desviaci?n est?ndar 
+$\sigma$ d?as. 
+Se ponen $n$  de tales bater\'ias  en cierto equipo, de forma tal que en cuanto una bater\'ia deja de funcionar, se activa inst?ntaneamente la siguiente.  
+\textquestiondown  Cu\'al es la probabilidad de que el equipo funcione al menos $t$ d\'ias? La idea es preguntar por que dura $t=2*\sqrt{n \sigma^2 }+n\mu$  }
+
+
+
+\item {\color{red} Personalizar el $\sigma^2$.} Sean $X_1, \ldots, X_n$ i.i.d., $X_i\sim \mathcal  N(\mu, \sigma^2)$.
+Encontrar $n_0$ de forma tal que $\forall n\geq n_0$
+$$
+P\left(\vert\overline X_n-\mu\vert>0.1\right)\leq 0.2
+$$
+
+
+\section{Bonus Track - Para seguir pensando}
+\item Considerar nuevamente el enunciado del ejercicio 1.
+\begin{enumerate}
+	\item Calcular $E(XY)$.
+	\item Para esta poblaci\'{o}n, \textquestiondown las variables $X$ e $Y$
+	est\'{a}n positivamente asociadas?
+	\item Calcular la probabilidad de que un individuo  gane \$12000 o m\'as.  
+	\item Calcular la probabilidad de que un individuo con
+	10 a\~nos de educaci\'on gane \$12000 o m\'as.  
+\end{enumerate}
+\item Considerar nuevamente el enunciado del ejercicio 2.  Sabiendo que despu\'es de dos d\'ias de cultivo se obtuvo una colonia, 
+calcular la probabilidad de que sea de Tipo I utilizando los par\'ametros de $\lambda_1$ y $\lambda_2$ que le 
+hemos asignado. 
+
+\item Considerar nuevamente el enunciado del ejercicio 4:  sean $X_1, \ldots, X_n$ i.i.d., $X_i\sim \mathcal  N(\mu, \sigma^2)$, con $\sigma^2$ personalizado en la planilla {\color{red} poner donde esta}.
+Encontrar $n_0$ de forma tal que $\forall n\geq n_0$
+$$
+P\left(\vert\overline X_n-\mu\vert>0.01\right)\leq 0.2
+$$
+
+
+\end{enumerate}
+
+\end{document}
+
+
+
+
+

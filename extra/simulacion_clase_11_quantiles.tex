@@ -1,0 +1,218 @@
+\documentclass[12pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath,amsthm, amsfonts, amscd , amssymb}
+
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage[dvipsnames, usenames]{color}
+\usepackage{framed}
+
+\usepackage{latexsym}
+
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{lemma}{Lema}[section]
+% \theoremstyle{definition}
+\newtheorem{notation}{Notación}[section]
+\newtheorem{example}{Ejemplo}[section]
+\newtheorem{proposition}{Proposición}[section]
+\newtheorem{ejemplo}[theorem]{Ejemplo}
+\newtheorem{corollary}{Corolario}[section]
+\newtheorem{remark}{Observaci\'on}[section]
+\newtheorem{ejercicio}{Ejercicio}[section]
+\newtheorem{algorithm}{Algoritmo}[section]
+\newtheorem{corolario}{Corolario}[section]
+
+\newtheorem{definition}{Definici\'on}
+\setlength{\textwidth}{6.5in} \setlength{\oddsidemargin}{0in}
+\topmargin 0pt \textheight 7.75in
+\newcommand{\convprob}{ \buildrel{p}\over\longrightarrow}
+
+
+\def \EE {\mathbb{E}}
+\def \PP {\mathbb{P}}
+
+\begin{document}
+
+\centerline{\bf ESTAD\'ISTICA (Q)}%
+
+\medskip
+
+
+{\sc Simulaci\'on - Estimaci\'on de Cuantiles (o quantiles...)  - Clase 11}
+
+\bigskip 
+\section{Repaso Clase 11}
+Finalmente, empezamos a hablar de estad\'istica. De estimaci\'on, de datos. 
+
+Repasemos bevemente el marco teórico bajo el cuál estamos trabajando: 
+
+
+	\begin{itemize}
+		
+			\item Para nosotros \textbf{poblaci\'on} 
+				es la \textbf{distribuc\'on } que genera los datos. 
+				
+				\item Muestra: $X_1, \ldots, X_n$ iid,  $X_i\sim F$, $F$ es la \textbf{ poblaci\'on}. 
+				
+				\item 		Cualquier cantidad $\theta=\theta(F)$ relacionada a $F$ se dice par\'ametro poblacional. 
+				
+		
+		
+		
+		\item Cu\'ando hacemos estad\'istica no conocemos a $F$ ni el valor del par\'ametro poblacional $\theta$ de inter\'es. 
+		
+		\item Cu\'ando hacemos estad\'istica queremos hacer una cuenta con la muestra que nos permita \textit{estimar} el valor  $\theta$ de inte\'res. 
+		
+		
+		$$\hbox{Estimador:}\quad \widehat \theta_n=
+		\widehat \theta_n(X_1\, \ldots, X_n)$$	
+		
+		$$\hbox{Estimaci\'on:}\quad \widehat \theta_{n,\hbox{obs}}=
+		\widehat \theta_n(x_1\, \ldots, x_n), $$	
+		donde $x_1, \ldots, x_n$ representan  datos. Valores observados. 
+		
+	\end{itemize}
+	
+	Algunas definiciones importantes: 
+	\begin{itemize}
+		\item \textbf {Consistencia:}
+		$(\widehat \theta_n)_{n\geq 1}$ se dice consistente si 
+		$\widehat \theta_n \to \theta$ en probabilidad. Esta propidad, por lo general, la podemos deducir combinando la ley de los grandes números con alguna funcion continua, como se muestra en la clase teórica (ver slide 8 de Clase 11).  
+		
+		
+		\item \textbf{Sesgo:} El sesgo de un estimador se define siendo $\mathbb E(\widehat \theta_n)-\theta$. 
+		Cuando un estimador es \textit{promedio de algo}, resulta fácil calcular su esperanza. Si no...
+	\end{itemize}
+
+Gracias a la Ley de los Grandes Números  y otras yerbas (ver slide 8 de la Clase 11 ), hemos estudiado propiedades de los  estimadores propuestos para $\mu$, para una probabilidad $p$ y para $\sigma^2$. 
+No tenemos propiedades que garanticen la consistencia de los quantiles muestrales a los poblacionales. En esta Guía vamos a estudiar mediante una simulación el comportamiento de los quantiles muestrales, a medida que $n$ aumenta.  Esperamos  ver que convergen a donde queremos (los quantiles poblacionales)!
+
+
+
+
+
+\section{Sobre la consistencia de los quantiles muestrales (o emíricos)}
+
+\subsection{Distribución Uniforme}
+
+Sean $X_i\sim \mathcal U(a, b)$ siendo $a=67$, $b=73$. Utilizaremos $X$ para denotar de manera genérica una variable con esta misma distribución.  
+
+\vspace{0.3cm}
+\textbf{Quantiles pobacionales vs.  muestrales (o empíricos)}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cuánto vale $q_{0.9}=F^{-1}(0.9)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$uniformes}, $Nrep=1000$ datos con distribución $\mathcal U(a, b)$ siendo $a=67$, $b=73$, utilizando el comando 
+	\texttt{runif()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$quantiles$\_$uniformes} los quantiles muestrales  correspondiente a las primeras $n$ observaciones del vector \texttt{muchas$\_$uniformes},  con $n=1, \ldots, Nrep$.
+	Explorar el comando \newline \texttt{quantile(x= ,probs= )}
+	
+	
+	\item Graficar $n$ (en el eje x) versus el quantile empírico  de los primeros $n$ datos. Utilizar \texttt{ylim=c(65,75)}.
+	
+	\item Repetir los ítems 2-4 $Ngen=10$ veces, agregando al gráfico anterior los quantiles  de cada individuo en un color diferente. 
+	
+	\item Indicar  cuál espera que sea el valor límite de estas sucesiones. \textquestiondown Se condice con lo que muestra el gráfico? 
+	
+	
+	
+\end{enumerate}
+
+
+
+\subsection{Distribución Normal }
+
+Sean $X_i\sim \mathcal N(\mu, \sigma^2)$ siendo $\mu=70$, $\sigma^2=1.2$. Utilizaremos $X$ para denotar de manera genérica una variable con esta misma distribución.  
+
+
+
+\vspace{0.3cm}
+\textbf{Quantiles pobacionales vs.  muestrales (o empíricos)}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cuánto vale $q_{0.9}=F^{-1}(0.9)$?
+
+	
+	\item Guardar en el  vector \texttt{muchas$\_$normales}, $Nrep=1000$ datos con distribución $\mathcal N(\mu, \sigma^2)$ siendo $\mu=70$ y $\sigma^2=1.2$, utilizando el comando 
+	\texttt{rnorm()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$quantiles$\_$normales} el quantil emírico de  las primeras $n$ observaciones del vector  \texttt{muchas$\_$normales},  con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus el quantil emírico de  los primeros $n$ datos. Utilizar \texttt{ylim=c(60,80)}.
+	
+	\item Repetir los ítems 2-4  $Ngen=10$ veces, agregando al gráfico anterior los quantiles  de cada individuo en un color diferente. 
+	
+	\item Indicar  cuál espera que sea  el valor límite de estas sucesiones. \textquestiondown Se condice con lo que muestra el gráfico? 
+	
+	
+	
+	
+\end{enumerate}
+
+
+
+\subsection{Distribución Exponencial}
+
+Sean $X_i\sim \mathcal E(\lambda)$ siendo $\lambda=1/10$. Utilizaremos $X$ para denotar de manera genérica una variable con esta misma distribución.  
+
+
+\vspace{0.3cm}
+\textbf{Quantiles pobacionales vs.  muestrales (o empíricos)}
+
+\begin{enumerate}
+	
+	\item \textquestiondown Cuánto vale $q_{0.9}=F^{-1}(0.9)$?
+	
+	\item Guardar en el  vector \texttt{muchas$\_$exponenciales}, $Nrep=1000$ datos con distribución $ \mathcal E(\lambda)$ siendo $\lambda=1/10$, utilizando el comando 
+	\texttt{rexp()}.
+	
+	
+	
+	\item Guardar en el  vector \texttt{muchos$\_$quantiles$\_$exponenciales} el quantil muestral de las primeras $n$ observaciones del vector \texttt{muchas$\_$exponenciales}, con $n=1, \ldots, Nrep$.
+	
+	\item Graficar $n$ (en el eje x) versus el quantil muestral  de los primeros $n$ datos. Utilizar \texttt{ylim=c(0,35)}.
+	
+	\item Repetir los ítems 2-4  $Ngen=10$ veces, agregando al gráfico anterior los quantiles  de cada individuo en un color diferente. 
+	
+		
+	\item Indicar  cuál espera que sea  el valor límite de estas sucesiones. \textquestiondown Se condice con lo que muestra el gráfico? 
+	
+\end{enumerate}
+
+
+\end{document}
+
+
+
+\section{Sobre la distribuci\'on de los cuantiles muestrales}
+
+
+El Teorema Central del Límite juega un rol fundamental en la estadística por que nos permite aproximar la distribuci\'on de un estimador en la medida que este pueda ser escrito como el \textit{promedio de algo}. Ahora bien...
+\textquestiondown Qu\'e pasa con la distribuci\'on de los quantiles muestrales?. Estudiaremos empíricamente este problema mediante una simulación. 
+Para ello generaremos un conjunto de $n$  datos  con una
+distribuci\'{o}n dada y luego calcularemos el 0.9 quantil muestral. 
+Replicaremos \'{e}sto mil veces, es decir, generaremos $Nrep=1000$  realizaciones de la variable aleatoria  $\widehat q_{0.9, n}$,  para diferentes valores de $n$.  Observemos que
+desconocemos la distribuci\'{o}n de $\widehat q_{0.9, n}$. Utilizando  las $Nrep=1000$ realizaciones del quantile 
+realizaremos un histograma de los quantiles muestrales  generados para
+obtener una aproximaci\'{o}n de la densidad o la funci\'{o}n de probabilidad
+de $\widehat q_{0.9, n}$. 
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
