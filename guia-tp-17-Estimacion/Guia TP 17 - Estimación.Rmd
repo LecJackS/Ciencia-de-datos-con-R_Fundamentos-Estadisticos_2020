@@ -1,0 +1,806 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.4.2
+  kernelspec:
+    display_name: R [conda env:r] *
+    language: R
+    name: conda-env-r-r
+---
+
+# Guía TP 17 - Estimación
+
+
+> Point estimation refers to providing a single "best guess" of some quantity of interest.
+>
+> *All of statistics. Wasserman*
+
+
+
+## 1 Estimación bajo modelo uniforme $U [0, \theta]$
+Sean (Xi)i≥1 variables aleatorias independientes identicamente distribu ́ıdas, con distribuci ́on
+uniforme en el intervalo [0, θ]: Xi ∼ U[0, θ].
+
+Consideremos los siguientes estimadores de θ
+basados en una muestra X1, . . . , Xn:
+
+$$\large \begin{align}\hat \theta_n &= \hat \theta_n (X_1, \dots , X_n) = 2 \bar X , & \\
+ \tilde \theta_n &= \tilde \theta_n (X_1, \dots , X_n) = max \{X_1, \dots , X_n \}. &(1)\\
+ \end{align}$$
+
+
+
+## 1.1
+
+1. Implemente las funciones est1 y est2 que tengan por argumento un conjunto de datos
+(x1, . . . , xn) y devuelva el valor de la estimaci ́on
+
+$\hat \theta_n (x_1, \dots , x_n)$ y $\tilde \theta_n (x_1, \dots , x_n)$,
+
+para los estimadores definidos en (1), respectivamente.
+
+```{r}
+est1 <- function(Xn){
+    return(2*mean(Xn))
+}
+```
+
+```{r}
+est2 <- function(Xn){
+    return(max(Xn))
+}
+```
+
+## 1.2
+
+2. Calcule el valor de los estimadores est1 y est2 en los datos
+
+   1.17 1.75 0.28 2.56 2.36 0.36 1.82 0.24 1.17 1.86
+
+```{r}
+datos <- c(1.17, 1.75, 0.28, 2.56, 2.36, 0.36, 1.82, 0.24, 1.17, 1.86)
+```
+
+```{r}
+est1(datos)
+```
+
+```{r}
+est2(datos)
+```
+
+## 1.3
+
+3. Calcule el valor de los estimadores est1 y est2 en los datos
+
+    0.66 0.07 0.62 0.65 1.33 0.40 1.17 1.11 2.01 2.98
+
+```{r}
+datos <- c(0.66, 0.07, 0.62, 0.65, 1.33, 0.40, 1.17, 1.11, 2.01, 2.98)
+```
+
+```{r}
+est1(datos)
+```
+
+```{r}
+est2(datos)
+```
+
+## Simulación 1.
+
+A lo largo de esta simulaci ́on generaremos variables con distribuci ́on uniforme en el intervalo [0, 3].
+
+Es decir, trabajaremos con v.a. (Xi)i≥1 i.i.d., Xi ∼ U[0, θ] con θ = 3.
+
+
+**Tip:** Use `replicate()` and `apply()`
+
+```{r}
+Nrep <- 5
+replicate(Nrep, runif(2,0,3))
+```
+
+```{r}
+Nrep <- 1000
+n <- 5
+datos5 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 30
+datos30 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 50
+datos50 <- replicate(Nrep, runif(n, min=0, max=3))
+```
+
+```{r}
+estim.1.5 <- apply(X=datos5, MARGIN=1, est1)
+estim.2.5 <- apply(X=datos5, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.30 <- apply(X=datos30, MARGIN=1, est1)
+estim.2.30 <- apply(X=datos30, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.50 <- apply(X=datos50, MARGIN=1, est1)
+estim.2.50 <- apply(X=datos50, MARGIN=1, est2)
+```
+
+### Notar la escala!
+
+```{r}
+par(mfrow=c(2,2))
+hist(estim.1.5, main="Mean vs Max - 5 values", col="steelblue", prob=T)
+hist(estim.2.5, add=T, col='red', prob=T)
+hist(estim.1.30, main="Mean vs Max - 30 values", col="steelblue", prob=T)
+hist(estim.2.30, add=T, col='red', prob=T)
+hist(estim.1.50, main="Mean vs Max - 50 values", col="steelblue", prob=T)
+hist(estim.2.50, add=T, col='red', prob=T)
+```
+
+```{r}
+par(mfrow=c(2,2))
+hist(estim.2.5, xlim=c(2.85,3.15), main="Mean vs Max - 5 values", col="red", prob=T)
+hist(estim.1.5, add=T, col='steelblue', prob=T)
+hist(estim.2.30, xlim=c(2.85,3.15), main="Mean vs Max - 30 values", col="red", prob=T)
+hist(estim.1.30, add=T, col='steelblue', prob=T)
+hist(estim.2.50, xlim=c(2.85,3.15), main="Mean vs Max - 50 values", col="red", prob=T)
+hist(estim.1.50, add=T, col='steelblue', prob=T)
+```
+
+```{r}
+hist(estim.2.5, xlim=c(2.98,3), main="Max - 5, 30, 50 values", prob=T, col='blue', density=10)
+hist(estim.2.30, add=T, prob=T, col='red', density=20, angle=0)
+hist(estim.2.50, add=T, prob=T, col='green', density=30, angle=-45)
+```
+
+```{r}
+
+```
+
+## 1.5
+
+$$\large \text{ECME} = \frac{1}{Nrep} \sum_{k=1}^{Nrep} (\hat \theta_{n,k} - \theta)^2  $$
+
+
+5. Presente en una tabla el error cuadr ́atico medio emp ́ırico de los estimadores θbn y θen para
+muestras de tama ̃no n = 5, n = 30, n = 50, n = 100 y 500, utilizando Nrep = 1000
+replicaciones en cada caso. Qu ́e estimador elegir ́ıa?
+
+```{r}
+
+```
+
+```{r}
+Nrep <- 10000
+n <- 5
+datos5 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 30
+datos30 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 50
+datos50 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 100
+datos100 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 500
+datos500 <- replicate(Nrep, runif(n, min=0, max=3))
+n <- 5000
+datos5000 <- replicate(Nrep, runif(n, min=0, max=3))
+```
+
+```{r}
+estim.1.5 <- apply(X=datos5, MARGIN=1, est1)
+estim.2.5 <- apply(X=datos5, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.30 <- apply(X=datos30, MARGIN=1, est1)
+estim.2.30 <- apply(X=datos30, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.50 <- apply(X=datos50, MARGIN=1, est1)
+estim.2.50 <- apply(X=datos50, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.100 <- apply(X=datos100, MARGIN=1, est1)
+estim.2.100 <- apply(X=datos100, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.500 <- apply(X=datos500, MARGIN=1, est1)
+estim.2.500 <- apply(X=datos500, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.5000 <- apply(X=datos5000, MARGIN=1, est1)
+estim.2.5000 <- apply(X=datos5000, MARGIN=1, est2)
+```
+
+```{r}
+ECME <- function(estims, theta){
+    Nrep <- length(estims)
+    return ( sum( (estims-theta)^2 ) / Nrep )
+}
+```
+
+```{r}
+theta <- 3
+errors.1 <- rep(NA, 6)
+errors.1[1] <- ECME(estim.1.5, theta)
+errors.1[2] <- ECME(estim.1.30, theta)
+errors.1[3] <- ECME(estim.1.50, theta)
+errors.1[4] <- ECME(estim.1.100, theta)
+errors.1[5] <- ECME(estim.1.500, theta)
+errors.1[6] <- ECME(estim.1.5000, theta)
+```
+
+```{r}
+theta <- 3
+errors.2 <- rep(NA, 6)
+errors.2[1] <- ECME(estim.2.5, theta)
+errors.2[2] <- ECME(estim.2.30, theta)
+errors.2[3] <- ECME(estim.2.50, theta)
+errors.2[4] <- ECME(estim.2.100, theta)
+errors.2[5] <- ECME(estim.2.500, theta)
+errors.2[6] <- ECME(estim.2.5000, theta)
+```
+
+```{r}
+errors.1
+errors.2
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(errors.1, type='b', ylim=c(0, max(c(errors.1,errors.2))), col='red', main="ECME: 2xMean vs Max estimators")
+points(errors.2, type='b', col='blue')
+plot(errors.2, type='b', col='blue', main="ECME: Max estimator")
+plot(abs(errors.1-errors.2), type='b', col='violet', main="Dif ECME: Max-2xMean")
+```
+
+## 2. ¿A medida?
+
+
+Sea (Xi)i≥1 una muestra aleatoria con distribucin F.
+
+Denotemos con X a un elemento con misma distribucin que Xi.
+
+Asuma que estamos interesados en estimar el probabilidad de que X sea mayor a uno:
+
+$\theta (F) := \mathbf P_F (X > 1).$
+
+
+### Estimador 1:
+
+### 2.1.1
+
+1.1 Proponga un estimador $\hat\theta_n $ consistente para $\theta (F) = P_F (X > 1)$.
+
+
+> Propongo contar los valores mayores a 1, y dividirlo sobre el total: Frecuencia relativade X>1
+>
+> $$\large \hat\theta_n = \frac 1 {Nrep} \sum_{k=1}^{Nrep} \mathbb 1\{x_k > 1\}$$
+
+
+### 2.1.2
+
+1.2 Implemente una funcin est1 que tenga por argumento un conjunto de datos
+(x1, . . . , xn) muestra y devuelva el valor de la estimaci ́on obtenida utilizando θbn.
+
+```{r}
+est1 <- function(Xn){
+    Nrep <- length(Xn)
+    theta_hat <- sum(Xn>1)/Nrep
+    return( theta_hat )
+}
+```
+
+### 2.1.3
+
+1.3 Calcule el valor de θn en el siguiente conjunto de datos:
+
+    12.23 6.37 6.10 0.70 3.48 2.82 9.55 2.21 0.72 9.09
+
+```{r}
+datos <- c(12.23, 6.37, 6.10, 0.70, 3.48, 2.82, 9.55, 2.21, 0.72, 9.09)
+```
+
+```{r}
+est1(datos)
+```
+
+## Mundo Exponencial: Calentando motores
+
+### 2.1.4
+
+1.4 Sea X una variabe aleatoria con distribuci ́on F, exponencial de par ́ametro λ = 0.2:
+
+X ∼ E(0.2).
+
+Indique el valor de
+
+E(X) = . . . ,
+
+V(X) = . . . ,
+
+P(X > 1) = . . . ,
+
+cuando X ∼ E(0.2).
+
+
+> Sabemos de la exponencial:
+>
+> **PDF:** $$\huge f(x) = \lambda e ^{-\lambda x}$$
+>
+> **CDF:** $$\huge F(x) = 1 - e ^{-\lambda x}$$
+
+```{r}
+lambda <- 0.2
+E.X <- 1/lambda
+V.X <- 1/lambda^2
+E.X
+V.X
+```
+
+```{r}
+# P.Xg1: P(X greater than 1)
+# P.Xl1: P(X less than 1)
+P.Xl1 <- NA
+P.Xg1 <- 1 - P.Xl1
+```
+
+```{r}
+
+```
+
+```{r}
+k <- 1
+P.Xl1 <- 1 - exp(-lambda*k)
+```
+
+```{r}
+P.Xg1 <- 1 - P.Xl1
+P.Xg1
+```
+
+> Notar que es muy similar al valor estimado anteriormente, lo que indica que la distribución de los datos podría ser exponencial.
+
+
+### 2.1.5
+1.5 Sea ahora X una variabe aleatoria con distribuci ́on F pertenecinete a la familia exponencial: es decir, X ∼ E(λ) con λ DESCONOCIDO.
+
+Exprese cada uno de
+los siguientes objetos en funci ́on de λ:
+
+E(X) = . . . , 
+
+V(X) = . . . ,
+
+P(X > 1) = . . . , 
+
+cuando X ∼ E(λ).
+
+
+$$\large \begin{align} \\
+\mathbf E[X] &= \frac 1 \lambda \\
+\mathbf V[X] &= \frac 1 {\lambda ^2} \\
+\mathbf P(X>1) &= e ^{-\lambda} \\
+\end{align}$$
+
+
+
+## Mundo Exponencial: Haciendo Estadística
+
+
+Sean (Xi)i≥1 i.i.d., con misma distribucin que X.
+
+Asuma ahora que F pertenece a la familia exponencial; es decir, X ∼ E(λ), con λ DESCONOCIDO.
+
+1.6 Proponga un nuevo estimador θbn consistente para θ(F) = PF (X > 1) bajo este nuevo escenario.
+
+Es decir, defina θn = fn(X1, . . . , Xn) de forma tal que
+
+$$\large \tilde \theta_n = f_n(X_1, \dots , X_n) \longrightarrow e^{-\lambda}, \ \ \forall \lambda>0$$
+
+me equivoqué, así que defino otro estimador para no borrar todo:
+
+$$\large \theta_n^* = f_n(X_1, \dots , X_n) \longrightarrow \lambda, \ \ \forall \lambda>0$$
+
+
+> Tengo un estimador para P(X>1) para cualquier distribución usando al frecuencia relativa de los valores.
+>
+> Ahora, asumimos que la distribución es de la familia exponencial.
+>
+> En el punto anterior, se dedujo de manera teórica que $P(X>1)=e^{-\lambda}$
+
+
+>Se que el promedio de una exponencial convergue a su esperanza 1/lambda
+>
+>Por lo que lambda debe ser aprox. 1/promedio
+>
+>por lo que
+>
+> $$\huge \tilde \theta_n = e^{-\frac 1 {promedio}} \longrightarrow e^{-\lambda} $$
+
+
+### 2.1.7
+
+1.7 Implemente una funcin est2 que tenga por argumento un conjunto de datos
+(x1, . . . , xn) muestra y devuelva el valor de la estimaci ́on obtenida utilizando θen.
+
+```{r}
+
+```
+
+```{r}
+est2 <- function(Xn){
+    return(exp(-1/mean(Xn)))
+}
+```
+
+### 2.1.8
+
+1.8 Calcule el valor de θen en el siguiente conjunto de datos:
+
+    12.23 6.37 6.10 0.70 3.48 2.82 9.55 2.21 0.72 9.09.
+
+```{r}
+datos <- c(12.23, 6.37, 6.10, 0.70, 3.48, 2.82, 9.55, 2.21, 0.72, 9.09)
+```
+
+```{r}
+est2(datos)
+```
+
+> Al usar más datos y la estructura de la distribución original, debería obtener mejores estimaciones que con el primer estimador.
+
+
+### Simulación 1:
+
+A lo largo de esta simulacin generaremos variables con distribucin exponencial de paramtro λ = 0.2.
+
+### 2.1.9
+
+1.9 Indique cual es el veradero valor que estamos queriendo estimar: θ0 = P(X > 1),
+siendo X ∼ Exp(0.2).
+
+```{r}
+lambda <- 0.2
+exp(-lambda)
+```
+
+### 2.1.10
+
+1.10 Genere una muestras de tamao n=50 y calcule cada uno de los estimadores.
+
+```{r}
+n <- 50
+datos <- rexp(n, rate=lambda)
+```
+
+```{r}
+est1(datos)
+```
+
+```{r}
+est2(datos)
+```
+
+### 2.1.11
+
+1.11 Genere Nrep= 1000 muestras de tamao n=50 y guarde los valores de cada uno
+de los dos estimadores calculados en cada uno de los Nrep = 1000 conjuntos de
+datos.
+
+```{r}
+Nrep <- 1000
+```
+
+```{r}
+datos <- replicate(Nrep, rexp(n, rate=lambda))
+```
+
+```{r}
+estims.1 <- apply(datos, MARGIN=1, est1)
+estims.2 <- apply(datos, MARGIN=1, est2)
+```
+
+### 2.1.12
+
+1.12 Realize un histograma de cada uno de los estimadores propuestos con los val-
+ores obtenidos en el item anterior. Comente los gr ́aficos realizados. Indique que
+
+etimador prefiere en este escenario y explique a que atribuye sus bondades.
+
+```{r}
+hist(estims.2, prob=T, xlim=c(min(estims.1), max(estims.1)), density=30, col="steelblue",main="Estim generico vs prior Exponencial")
+hist(estims.1, prob=T, add=T, col="orange", density=30, angle=-45)
+```
+
+### 2.1.13
+
+1.13 Represente en una tabla el error cuadrtico medio (estimado) de los estimadores
+θbn y θen para muestras de tamao n=150, n=200, n=500 y n=1000, utilizando
+Nrep=1000 replicaciones en cada caso. Qu ́e estimador prefiere bajo este escenario?
+
+```{r}
+Nrep <- 10000
+n <- 150
+datos150 <- replicate(Nrep, rexp(n, rate=lambda))
+n <- 200
+datos200 <- replicate(Nrep, rexp(n, rate=lambda))
+n <- 500
+datos500 <- replicate(Nrep, rexp(n, rate=lambda))
+n <- 1000
+datos1000 <- replicate(Nrep, rexp(n, rate=lambda))
+n <- 5000
+datos5000 <- replicate(Nrep, rexp(n, rate=lambda))
+```
+
+```{r}
+estim.1.150 <- apply(X=datos150, MARGIN=1, est1)
+estim.2.150 <- apply(X=datos150, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.200 <- apply(X=datos200, MARGIN=1, est1)
+estim.2.200 <- apply(X=datos200, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.500 <- apply(X=datos500, MARGIN=1, est1)
+estim.2.500 <- apply(X=datos500, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.1000 <- apply(X=datos1000, MARGIN=1, est1)
+estim.2.1000 <- apply(X=datos1000, MARGIN=1, est2)
+```
+
+```{r}
+estim.1.5000 <- apply(X=datos5000, MARGIN=1, est1)
+estim.2.5000 <- apply(X=datos5000, MARGIN=1, est2)
+```
+
+```{r}
+ECME <- function(estims, theta){
+    Nrep <- length(estims)
+    return ( sum( (estims-theta)^2 ) / Nrep )
+}
+```
+
+```{r}
+lambda <- 0.2
+theta <- exp(-lambda)
+errors.1 <- rep(NA, 5)
+errors.1[1] <- ECME(estim.1.150, theta)
+errors.1[2] <- ECME(estim.1.200, theta)
+errors.1[3] <- ECME(estim.1.500, theta)
+errors.1[4] <- ECME(estim.1.1000, theta)
+errors.1[5] <- ECME(estim.1.5000, theta)
+```
+
+```{r}
+errors.2 <- rep(NA, 5)
+errors.2[1] <- ECME(estim.2.150, theta)
+errors.2[2] <- ECME(estim.2.200, theta)
+errors.2[3] <- ECME(estim.2.500, theta)
+errors.2[4] <- ECME(estim.2.1000, theta)
+errors.2[5] <- ECME(estim.2.5000, theta)
+```
+
+```{r}
+errors.1
+errors.2
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(errors.1, type='b', ylim=c(0, max(c(errors.1,errors.2))), col='red', main="ECME: estim1 vs estim2")
+points(errors.2, type='b', col='blue')
+plot(errors.2, type='b', col='blue', main="ECME: estim2 estimator")
+plot(abs(errors.1-errors.2), type='b', col='violet', main="Dif ECME: estim1-estim2")
+```
+
+Mundo Normal: Ojo al Piojo! Considere ahora variables aleatorias Xi i.i.d. con
+
+distribucin normal de media μ = 1/0.2 y σ2 = 1/0.2^2
+
+$$\large X_i \sim \mathcal N \left(\frac 1 {0.2}, \frac 1 {0.2^2} \right)$$
+
+$$\large X_i \sim \mathcal N \left(5, 25 \right)$$
+
+### 1.14
+
+1.14 Calcule la probabilidad de que Xi supere el valor 1: P(Xi > 1)
+
+```{r}
+P.Xlt1 <- pnorm(1, mean=5, sd=5)
+P.Xlt1
+```
+
+```{r}
+P.Xgt1 <- 1 - P.Xlt1
+P.Xgt1
+```
+
+### 1.15
+
+1.15 Calcule el valor de cada uno de los siguientes lmites:
+
+lim n→∞ 
+
+θbn(X1, . . . , Xn) = ...... , 
+
+lim n→∞ 
+
+θen(X1, . . . , Xn) = ......
+
+
+$$\huge \begin{align}
+\large \hat\theta_n = \frac 1 {n} \sum_{k=1}^{n} \mathbb 1\{x_k > 1\} &\longrightarrow P(X>1) \\
+\large \tilde \theta_n = e^{-\frac 1 {\bar X_n}} &\longrightarrow e^{-\frac 1 {E[X]}} = e^{-\frac 1 {\mu}} = e^{-0.2} 
+\end{align}$$
+
+
+### 1.16
+
+1.16 Propongo un nuevo estimador $\theta^∗_n = \theta^∗(X1, · · · , Xn)$ para $\theta^∗(F) = P_F (Xi > 1)$,
+asumiendo asumiendo ahora que F pertenece a la normal: $X_i \sim N (\mu, \sigma^2)$.
+
+
+
+
+$E[Xi] = \mu$
+
+$V[Xi] = \sigma^2$
+
+
+Estimo Mu, estimo Var, y calculo la acumulada a derecha de 1 para esos dos parametrs
+
+```{r}
+est1 <- function(Xn){
+    Nrep <- length(Xn)
+    theta_hat <- sum(Xn>1)/Nrep
+    return( theta_hat )
+}
+```
+
+```{r}
+est2 <- function(Xn){
+    return(exp(-1/mean(Xn)))
+}
+```
+
+```{r}
+est3 <- function(Xn){
+    # Asumiendo Normalidad
+    mu <- mean(Xn)
+    sigma <- sd(Xn)
+    P.Xlt1 <- pnorm(1, mean=mu, sd=sigma)
+    P.Xgt1 <- 1 - P.Xlt1
+    return(P.Xgt1)
+}
+```
+
+## Simulacion 2:
+
+A lo largo de esta simulacin generaremos variables con distribucin
+normal de media μ = 1/0.2 y σ2 = 1/0.2^2
+
+. Represente en una tabla el error cuadrtico medio (estimado) de los estimadores θbn, θen y θ∗n para muestras de tamao n=150,
+n=200, n=500 y n=1000, utilizando Nrep=1000 replicaciones en cada caso.
+
+Analice los resultados obtenidos y explique que estimador elegira bajo este escenario.
+
+```{r}
+mu <- 1/0.2
+sigma <- 1/0.2
+Nrep <- 10000
+n <- 150
+datos150 <- replicate(Nrep, rnorm(n, mean=mu, sd=sigma))
+n <- 200
+datos200 <- replicate(Nrep, rnorm(n, mean=mu, sd=sigma))
+n <- 500
+datos500 <- replicate(Nrep, rnorm(n, mean=mu, sd=sigma))
+n <- 1000
+datos1000 <- replicate(Nrep, rnorm(n, mean=mu, sd=sigma))
+n <- 5000
+datos5000 <- replicate(Nrep, rnorm(n, mean=mu, sd=sigma))
+```
+
+```{r}
+estim.1.150 <- apply(X=datos150, MARGIN=1, est1)
+estim.2.150 <- apply(X=datos150, MARGIN=1, est2)
+estim.3.150 <- apply(X=datos150, MARGIN=1, est3)
+```
+
+```{r}
+estim.1.200 <- apply(X=datos200, MARGIN=1, est1)
+estim.2.200 <- apply(X=datos200, MARGIN=1, est2)
+estim.3.200 <- apply(X=datos200, MARGIN=1, est3)
+```
+
+```{r}
+estim.1.500 <- apply(X=datos500, MARGIN=1, est1)
+estim.2.500 <- apply(X=datos500, MARGIN=1, est2)
+estim.3.500 <- apply(X=datos500, MARGIN=1, est3)
+```
+
+```{r}
+estim.1.1000 <- apply(X=datos1000, MARGIN=1, est1)
+estim.2.1000 <- apply(X=datos1000, MARGIN=1, est2)
+estim.3.1000 <- apply(X=datos1000, MARGIN=1, est3)
+```
+
+```{r}
+estim.1.5000 <- apply(X=datos5000, MARGIN=1, est1)
+estim.2.5000 <- apply(X=datos5000, MARGIN=1, est2)
+estim.3.5000 <- apply(X=datos5000, MARGIN=1, est3)
+```
+
+```{r}
+ECME <- function(estims, theta){
+    Nrep <- length(estims)
+    return ( sum( (estims-theta)^2 ) / Nrep )
+}
+```
+
+```{r}
+lambda <- 0.2
+theta <- 1 - pnorm(1, mean=mu, sd=sigma)
+errors.1 <- rep(NA, 5)
+errors.1[1] <- ECME(estim.1.150, theta)
+errors.1[2] <- ECME(estim.1.200, theta)
+errors.1[3] <- ECME(estim.1.500, theta)
+errors.1[4] <- ECME(estim.1.1000, theta)
+errors.1[5] <- ECME(estim.1.5000, theta)
+```
+
+```{r}
+errors.2 <- rep(NA, 5)
+errors.2[1] <- ECME(estim.2.150, theta)
+errors.2[2] <- ECME(estim.2.200, theta)
+errors.2[3] <- ECME(estim.2.500, theta)
+errors.2[4] <- ECME(estim.2.1000, theta)
+errors.2[5] <- ECME(estim.2.5000, theta)
+```
+
+```{r}
+errors.3 <- rep(NA, 5)
+errors.3[1] <- ECME(estim.3.150, theta)
+errors.3[2] <- ECME(estim.3.200, theta)
+errors.3[3] <- ECME(estim.3.500, theta)
+errors.3[4] <- ECME(estim.3.1000, theta)
+errors.3[5] <- ECME(estim.3.5000, theta)
+```
+
+```{r}
+errors.1
+errors.2
+errors.3
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(errors.1, type='b', ylim=c(0, max(c(errors.1,errors.2))), col='red', main="ECME: estim1 vs estim2")
+points(errors.2, type='b', col='blue')
+points(errors.3, type='b', col='green')
+plot(errors.3, type='b', col='green', main="ECME:", ylim=c(min(errors.1, errors.3), max(errors.1, errors.3)))
+points(errors.1, type='b', col='red')
+plot(abs(errors.1-errors.3), type='b', col='violet', main="Dif ECME: estim2-estim3")
+```
+
+> La evidencia empírica indica que el estimador 3 tiene un ECME muy similar al del estimador 2 (de la familia exponencia), pero ambos están muy por encima del error mínimo del estimador 1: Tomar frecuencia relativa.
+>
+> En este caso, hacer uso de que la distribución es normal estimando sus parámetros resulta peor que no asumir nada.
+
+```{r}
+
+```
