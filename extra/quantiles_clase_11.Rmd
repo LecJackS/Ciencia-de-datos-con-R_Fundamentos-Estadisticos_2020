@@ -4,7 +4,7 @@ date: "`r Sys.Date()`"
 output:   html_document
 ---
 
-
+$$\large \hat s_{MAP} = \frac {\frac {x_A}{\sigma^2_A} + \frac {x_V}{\sigma^2_V}}{\frac {1}{\sigma^2_A} + \frac {1}{\sigma^2_V}}$$
 
 
 ```{r setup, include=FALSE}
