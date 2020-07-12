@@ -1,0 +1,225 @@
+---
+title: "Monte Carlo vs.Bootstrap "
+date: "`r Sys.Date()`"
+output:   html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(999)
+```
+
+```{r echo=FALSE}
+mu <- 10
+sigma <- 2
+```
+
+Advertencia: el código implementado en esta presentación no usufructúa de las bondades de lenguaje  R. Fue concebido para enfatizar en los conceptos involucrados en cada desarrollo. 
+
+
+### Monte Carlo - Largada
+Supongamos que $X\sim \mathcal N(\mu, \sigma^2)$, con $\mu=`r  mu`$ y $\sigma^2=`r sigma^2`$. Nos interesa *calcular* 
+$$\mathbb E(\cos(X)^2).$$
+En este punto, recordemos la ley del *Lazzy Statistician*, que establece que  
+$$\mathbb E(g(X))=\int_{-\infty}^\infty g(x) f(x)\,dx\;,\quad X\sim f$$
+Invocando este principio, necesitamos calcular 
+$$\int_{-\infty}^\infty \cos^2(x) \frac{1}{\sigma\sqrt{2\pi}}\exp^{-(x-\mu)^2/2\sigma^2}
+\,dx\;,\quad \hbox{con $\mu=$`r mu`  y $\sigma^2$=`r sigma^2`}.$$
+
+
+Tenemos entonces que calcular integrales. Oh no!
+y ahora, ¿quién podrá ayudarnos? Cabe enfatizar que este es un problema de proba-análisis matemático. NO DE ESTADISTICA. 
+Conocemos todo; pero no podemos/sabemos/queremos hacer cuentas. 
+
+Vamos a ser más vagos aún, invocar la ley de los grandes números y aproximar la esperanza haciendo un promedio. Sabemos que,  en probabilidad, 
+$$\frac{1}{N}\sum_{i=1}^N g(X_i)\longrightarrow \mathbb E(g(X)),$$
+donde $(X_i)_{i\geq 1}$ son i.i.d., $X_i\sim X$. Vamos ahora a pedirle ayuda a la compu, generando $N$ realizaciones de $X$,  evaluamos en $g$ cada punto y promediamos. 
+
+
+```{r}
+g <- function(x) 
+{ 
+    cos(x)^2
+}
+
+mu <- 10
+sigma <- 2
+
+N <- 100000 #elijo cuantas veces repito
+g_en_dato <- rep(NA, N)
+for(i in 1:N)
+{
+    invento_dato <- rnorm(1, mu, sigma)
+    g_en_dato[i] <- g(invento_dato)
+}
+
+esp_aprox <- mean(g_en_dato)
+esp_aprox
+```
+
+Tenemos entonces nuestra aproximación de la esperanza que necesitábamos calcular. Podemos repetir varias veces, para saber si hay mucha variabilidad y también  podemos usar un valor de $N$ más grande. En algún momento, cuando nos convencemos del $N$ a usar, fijamos una semilla para garantizar la reproducibilidad del cálculo y usamos esa salida para obtener la aproximación. 
+
+Supongamos que, después de explorar un poco estas variantes, concluímos que $N=100000$ es suficiente, y proseguimos...
+
+
+```{r}
+set.seed(000)
+N <- 100000 #elijo cuantas veces repito
+g_en_en_dato <- rep(NA, N)
+for(i in 1:N)
+{
+    invento_dato <- rnorm(1, mu, sigma)
+    g_en_en_dato[i] <- g(invento_dato)
+}
+
+esp_aprox_final<- mean(g_en_en_dato)
+esp_aprox_final
+```
+
+Después ponemos .... $\mathbb E(g(X))=`r round(esp_aprox_final,2)`$..... La esperanza fue obtenida utilizando Monte Carlo con $N=`r N`$.
+
+### Monte Carlo - Una vuelta más
+
+Queremos ahora calcular $\mathbb V(g(X))$, siendo que $X\sim \mathcal N(\mu,\sigma^2)$, con  $\mu$=`r mu`  y $\sigma^2$=`r sigma^2` . ¿Qué hacemos? Inventamos muchos ($N$) valores de $g(X)$ y le hacemos ``var`` en R, como indica el siguiente código, donde evitamos el `for`, generando todo de una vez.  
+
+```{r}
+set.seed(000)
+N <- 100000 #elijo cuantos datos invento
+invento_datos <- rnorm(N,mu,sigma)
+
+var_aprox <- var(g(invento_datos))
+var_aprox
+```
+y obtenemos así que $\mathbb V(g(X))\approx `r round(var_aprox,2)`$.
+
+
+#### Una más!
+En esta materia estuvimos trabajando  mucho con promedios de variables $(X_i)_{i\geq 1}$ i.i.d., $X_i\sim X$; pensemos ahora entonces en cómo calcular la esperanza o la varianza de 
+$$g(\overline X_n)$$
+CONOCIENDO LA DISTRIBUCION DE $X_i$. 
+
+Monte Carlo! Fijemos un valor para $n$. Pensemos en $n=5$. Tengamos presente que, ahora, la función la tenemos que calcular sobre el promedio, utilizando $n=5$ datos, y después repetir eso $N$ veces. 
+
+```{r}
+set.seed(000)
+N <- 100000 #elijo cuantas veces repito
+n <- 5
+muchas_g <- rep(NA, N)
+for(i in 1:N)
+{
+    datos <- rnorm(n, mu, sigma)
+    muchas_g[i] <- g(mean(datos))
+}
+
+esp_aprox <- mean(muchas_g)
+var_aprox <- var(muchas_g)
+
+esp_aprox
+var_aprox
+```
+
+Obtenemos así que la esperanza y varianza pueden ser aproximadas por 
+`r round(esp_aprox, 2)` y `r round(var_aprox, 2)`, respectivamente. 
+
+Cabe mencionar que, en este caso, como $X_i\sim \mathcal N(\mu,\sigma^2)$, con  $\mu=`r mu`$   y $\sigma^2$=`r sigma^2`, 
+SABEMOS la distribución del promedio.
+
+Es decir, tenemos que $\overline X_n\sim \mathcal N(\mu,\sigma^2/n)$, con  $\mu=`r mu`$  y $\sigma^2$=`r sigma^2`. En este caso, podríamos empezar con esta distribución, sin necesidad de promediar $n=5$ normales $N(\mu,\sigma^2)$, con  $\mu=`r mu`$ y $\sigma^2$=`r sigma^2`.
+
+Por más que conozcamos la distribución de $X_i$, como en este caso, no siempre podemos caracterizar la distribución del promedio. Por eso, dejamos planteado este escenario, que puedo emplearse incluso sin necesidad de conocer la distribución del promedio. 
+
+
+
+### Ahora hagamos estadística.
+De acá en adelante, asumimos que no se conoce la distribución de $X$. Por eso, hablamos de estadística. 
+
+Pensemos en el laboratorio, donde queremos estimar $g(\mu)$, siendo $\mu$ el mesurando, asumiendo un modelo de mediciones con error aditivo,  sin error sistemático: 
+$$X_i=\mu+\varepsilon_i,$$
+donde $X_i$ denota la $i$-ésima medición realizada y $\varepsilon_i$ denota el error asociado a esa medición. 
+
+Asumimos $\varepsilon_i$ i.i.d., $\mathbb E(\varepsilon_i)=0$ para contemplar la falta de errores sistemáticos.
+Utilizamos $X$ y $\varepsilon$ para $X\sim X_i$, $\varepsilon\sim \varepsilon_i$, de manera genérica.
+Tenemos entonces que $\mathbb E(X)=\mu$. 
+
+De la Ley de los Grandes Números, sabemos que $\overline X_n$ es un estimador consistente de $\mu$: converge al valor del mesurando cuando la cantidad $n$ de mediciones crece. ¿Cómo estimamos $g(\mu)$? Con $g(\overline X_n)$, claro. Y se puede demostrar que si $g$ es una función continua, entonces  $g(\overline X_n)$ converge a $g(\mu)$. ¿Estimamos?
+
+```{r}
+mediciones <-c(10.95,  8.97,  7.18, 10.80,  8.71) 
+mu_est <- mean(mediciones)
+estimacion_g_de_mu <- g(mu_est)
+```
+
+Utilizando los datos cargados en el vector `mediciones`, las estimaciones para $\mu$ y $g(\mu)$ están dadas por `r round(mu_est,2)` y `r round(estimacion_g_de_mu, 2)`, respectivamente.  Hermoso.  Ahora necesitamos el error de estimación, es decir, poder estimar el desvío estandar del estimador $g(\widehat \mu_n)$ (o una aproximación del desvío estandar del estimador).
+
+¿Qué hacemos?
+
+* **Opción 1 -  Bootstrap paramétrico.**
+  
+  Vamos a agregar un supuesto: normalidad de $\varepsilon_i$:
+  
+  $\varepsilon_i \sim \mathcal N(0, \sigma^2)$. En tal caso, tenemos que $X_i\sim \mathcal N(\mu, \sigma^2)$ y queremos estimar la varianza de $g(\overline X_n)$.
+  
+  Usando Monte Carlo, hemos dado una respuesta a esta pregunta generando datos bajo la distribución del modelo. Pero ahora....  sí tenemos un problema de estadística, porque ya no conocemos más los parámetros $\mu$ y $\sigma^2$ que utilizamos al hacer Monte Carlo. 
+
+Bootstrap paramétrico consiste entonces en hacer un Monte Carlo PERO con los parámetros estimados, como se muestra en los siguientes pasos: 
+```{r}
+set.seed(000)
+mu_est <- mean(mediciones)
+sigma_est <- sd(mediciones)
+
+Nboot <- 100000 #elijo cuantas veces repito con otro nombre
+muchas_g_boot_par <- rep(NA, Nboot)
+n <- length(mediciones)
+for(i in 1:Nboot)
+{
+    datos_boot_par <- rnorm(n,mu_est,sigma_est)
+    muchas_g_boot_par[i] <- g(mean(datos_boot_par))
+}
+
+var_apox_boot_par <- sd(muchas_g_boot_par) # aca tenemos el error de estimacion.
+var_apox_boot_par
+```
+
+
+* **Opción 2 - Propagación de Errores/Método Delta. **
+  
+  Vimos que, si $\widehat \theta_n$ es un estimador de $\theta$ asintóticamente normal, Taylor de por medio,  tenemos la siguiente aproximación para la varianza asintótica  de $g(\widehat \theta_n)$. 
+$$\mathbb V(g(\widehat \theta_n))\approx \vert  g^\prime (\widehat\theta_n)\vert ^2 \mathbb V(\widehat \theta_n)$$
+Una vez que conseguimos una aproximación para la varianza, hacemos una estimación de ella.
+En el ejemplo que estamos considerando, 
+$\widehat \theta_n=\overline X_n$ y $\mathbb V(\widehat\theta_n)=\mathbb V(\overline X_n)=\mathbb V(X)/n$.
+  
+  Siendo $g(x)=\cos^2(x)$, tenemos que $g^\prime(x)=-2\cos(x)\sin(x)$. En tal caso, 
+el error de estimación se obtiende haciendo 
+$$2\vert \cos(\overline X_n)\sin(\overline X_n)\vert \sqrt{S^2/n}$$
+En R, tenemos
+```{r}
+g_prima <- function(x)
+{
+    -2*cos(x)*sin(x)
+}
+
+prop_error <- abs(g_prima(mu_est))*sd(mediciones)/sqrt(n)
+prop_error
+```
+
+
+* **Opción 3 - Bootstrap no paramétrico** - para cuando tenemos más datos.
+
+  A diferencia del caso paramétrico, no hacemos supuesto alguno sobre la distribución de $X$. Entonces, cuando necesitamos generar datos en el paso Monte Carlo, utilizamos la empírica. 
+```{r}
+set.seed(000)
+muchas_mediciones <- rnorm(100, mu, sigma)
+Nboot <- 100000 #elijo cuantas veces repito con otro nombre
+n <- length(muchas_mediciones)
+muchas_g_boot_nopar <- rep(NA, Nboot)
+for(i in 1:Nboot)
+{
+    datos_boot_nopar <- sample(muchas_mediciones, size=n,replace = TRUE)
+    muchas_g_boot_nopar[i] <- g(mean(datos_boot_nopar))
+}
+
+var_apox_boot_nopar <- sd(muchas_g_boot_nopar) # aca tenemos el error de estimacion.
+var_apox_boot_nopar
+```
+
