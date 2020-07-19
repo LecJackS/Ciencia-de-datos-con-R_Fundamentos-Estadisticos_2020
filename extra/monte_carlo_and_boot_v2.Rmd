@@ -209,7 +209,8 @@ prop_error
   A diferencia del caso paramétrico, no hacemos supuesto alguno sobre la distribución de $X$. Entonces, cuando necesitamos generar datos en el paso Monte Carlo, utilizamos la empírica. 
 ```{r}
 set.seed(000)
-muchas_mediciones <- rnorm(100, mu, sigma)
+muchas_mediciones <-mediciones <-c(10.95,  8.97,  7.18, 10.80,  8.71, 9.44,  7.37, 11.59, 10.54,  9.45  ,8.87 , 6.24,  7.47,  8.06,7.76, 12.65, 10.27, 11.88, 10.35, 11.92  ,7.27, 10.14)
+
 Nboot <- 100000 #elijo cuantas veces repito con otro nombre
 n <- length(muchas_mediciones)
 muchas_g_boot_nopar <- rep(NA, Nboot)
@@ -222,4 +223,38 @@ for(i in 1:Nboot)
 var_apox_boot_nopar <- sd(muchas_g_boot_nopar) # aca tenemos el error de estimacion.
 var_apox_boot_nopar
 ```
+
+### El mundo del revez
+
+La Ley de los Grandes Números puede también utilizarse como una propuesta para aproximar integrales numéricamente. 
+A modo de ejemplo, supongamos que tenemos que calcular 
+$$\int_0^1 h(x)\;dx,\quad  h(x)=x^2.$$
+Esta integral no representa un gran desafío numérico. $x^3/3$ es una primitiva de la función $h(x)$ y luego invocamos la regla de Barrow para concluir que la integral vale 1/3. 
+Pero... ¿qué pasa si no sabemos calcular primtivas?
+Hay muchos métodos numéricos para aproximar integrales, pensando en áreas. Nosotros, haremos una propuesta basada en la LGN. 
+
+La idea es notar que 
+$$\int_0^1 h(x)\;dx=\mathbb E(h(U))\;,\quad U\sim \mathcal U(0,1).$$
+Luego, si $(U_i)_{i\geq 1}$ son variables i.i.d., $U_i\sim U$, 
+tenemos que la siguiente convergencia en probabilidad: 
+$$\frac{1}{N}\sum_{i=1}^N h(U_i) \longrightarrow \mathbb E(h(U))=\int_0^1 h(x)\;dx.$$
+Es decir, al haber podido interpretar a la integral como una esperanza, podemos valernos de la LGN para proponer un algoritmo que nos permita aproximarla. En la practica, podemos hacer: 
+```{r}
+h <- function(x)
+{
+  x^2
+}
+
+N <- 100000
+genero_unif <- runif(N,0,1)
+int_approx <- mean(h(genero_unif))
+int_approx
+```
+
+En este ejemplo de juguete, podemos comparar la aproximación numérica (y aleatoria) con el valor analítico de la intergral. 
+Nada mal!
+
+
+
+Si bien en dim 1 esta propuesta no es muy competitiva, puede ser muy útil cuando se quiere resolver una integral en un conjunto que viva en un espacio de mayor dimensión. 
 

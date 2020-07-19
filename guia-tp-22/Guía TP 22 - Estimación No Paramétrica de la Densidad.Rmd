@@ -340,7 +340,7 @@ grid()
 ```{r}
 par(mfrow=c(2,2))
 plot(grilla.z, f_hat.uni, type='l', col='steelblue', lwd=2, main = "Kernel Uniforme - h=10", xlab='pesos (z)', ylab=expression(hat(f[h])(z)), mgp=c(2,0.5,0))
-plot(density(datos, kernel='rectangular', bw=5.7), lwd=2, col='orange')
+plot(density(datos, kernel='rectangular', window=5.7), lwd=2, col='orange')
 
 plot(grilla.z, f_hat.uni, type='l', col='steelblue', lwd=2, main = "Kernel Uniforme - h=10", xlab='pesos (z)', ylab=expression(hat(f[h])(z)), mgp=c(2,0.5,0))
 lines(density(datos, kernel='rectangular', bw=10), lwd=2, col='orange')
@@ -475,6 +475,18 @@ for(i in 1:n){
     x <- datos[i]
     f.hat[i] <- density(datos, from=x, to=x, n=1)$y
 }
+```
+
+```{r}
+n <- length(datos)
+f.hat <- rep(NA, n)
+for(i in 1:n){
+    x <- datos[i]
+    f.hat[i] <- density(datos, from=x, to=x, n=1)$y
+}
+plot(density(datos), main="Estimaciones en datos")
+points(datos, f.hat, col='red')
+points(datos, rep(0, n),col='steelblue')
 ```
 
 ```{r}

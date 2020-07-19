@@ -1,0 +1,12 @@
+name: Area-Monte-Carlo
+title: Area-Monte-Carlo
+username:
+account: exactas
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2586902
+bundleId: 3407282
+url: https://exactas.shinyapps.io/Area-Monte-Carlo/
+when: 1595095927.53838
+asMultiple: FALSE
+asStatic: FALSE
