@@ -42,6 +42,7 @@ ui <- fluidPage(
   # App title ----
   titlePanel("Monte Carlo"),
   p('Ejemplo de la estimación del area de un círculo con el método Monte Carlo'),
+  a("Código fuente", href="https://github.com/LecJackS/Ciencia-de-datos-con-R_Fundamentos-Estadisticos_2020/tree/master/clase25-extra-Monte-Carlo"),
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
     # Sidebar panel for inputs ----
@@ -62,6 +63,7 @@ ui <- fluidPage(
       #  column(6, actionButton("resample", "Re-sample"))
       #)
     ),
+    
     
     # Main panel for displaying outputs ----
     mainPanel(
